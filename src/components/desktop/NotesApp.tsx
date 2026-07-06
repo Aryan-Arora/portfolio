@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { StickyNote } from "lucide-react";
-import { WindowFrame } from "./WindowFrame";
+import { WindowFrame, type WindowChrome } from "./WindowFrame";
 import { notes, groupOrder, type Note } from "@/content/notes";
 import { cn } from "@/lib/utils";
 
-export function NotesApp() {
+export function NotesApp({ chrome }: { chrome?: WindowChrome }) {
   const [activeId, setActiveId] = useState<string>(notes[0].id);
   const active = notes.find((n) => n.id === activeId) ?? notes[0];
 
@@ -14,7 +14,8 @@ export function NotesApp() {
     <WindowFrame
       title="Notes"
       icon={<StickyNote className="h-3.5 w-3.5" />}
-      className="h-[560px] sm:h-[600px]"
+      {...chrome}
+      className="h-full"
       bodyClassName="!overflow-hidden"
     >
       <div className="grid h-full grid-cols-1 sm:grid-cols-[260px_1fr]">
@@ -50,9 +51,18 @@ export function NotesApp() {
             <span>{active.title}</span>
           </h1>
           <div className="flex max-w-2xl flex-col gap-4 text-[15px] leading-relaxed text-white/85">
-            {active.body.map((paragraph, i) => (
-              <p key={i}>{paragraph}</p>
-            ))}
+            {active.body.map((paragraph, i) =>
+              paragraph.startsWith("## ") ? (
+                <h2
+                  key={i}
+                  className="mt-2 text-xs font-bold uppercase tracking-[0.14em] text-white/45"
+                >
+                  {paragraph.slice(3)}
+                </h2>
+              ) : (
+                <p key={i}>{paragraph}</p>
+              )
+            )}
           </div>
 
           {/* mobile note switcher */}

@@ -1,18 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Wifi, Search, BatteryMedium } from "lucide-react";
+import { useDesktop } from "./DesktopContext";
 
-export function MenuBar({ activeApp }: { activeApp: string }) {
-  const [time, setTime] = useState<string | null>(null);
+export function MenuBar() {
+  const { activeApp } = useDesktop();
+  const [now, setNow] = useState<{ date: string; time: string } | null>(null);
 
   useEffect(() => {
-    const update = () =>
-      setTime(
-        new Date().toLocaleTimeString("en-US", {
+    const update = () => {
+      const d = new Date();
+      setNow({
+        date: d.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        }),
+        time: d.toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
-        })
-      );
+        }),
+      });
+    };
     update();
     const id = setInterval(update, 30_000);
     return () => clearInterval(id);
@@ -29,9 +39,19 @@ export function MenuBar({ activeApp }: { activeApp: string }) {
         <span className="hidden text-white/60 sm:inline">Window</span>
         <span className="hidden text-white/60 sm:inline">Help</span>
       </div>
-      <div className="flex items-center gap-3 text-white/80">
-        <span className="hidden sm:inline">aryan arora</span>
-        {time && <span>{time}</span>}
+      <div className="flex items-center gap-3.5 text-white/85">
+        <span className="hidden items-center gap-1 sm:flex">
+          <BatteryMedium className="h-4.5 w-4.5" strokeWidth={1.5} />
+          <span className="text-xs">87%</span>
+        </span>
+        <Wifi className="hidden h-4 w-4 sm:block" strokeWidth={1.75} />
+        <Search className="hidden h-3.5 w-3.5 sm:block" strokeWidth={2} />
+        {now && (
+          <span className="whitespace-nowrap">
+            <span className="hidden sm:inline">{now.date}&ensp;</span>
+            {now.time}
+          </span>
+        )}
       </div>
     </div>
   );

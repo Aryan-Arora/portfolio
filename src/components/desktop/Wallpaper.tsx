@@ -1,4 +1,27 @@
+"use client";
+
+import { useDesktop } from "./DesktopContext";
+import { wallpapers } from "@/content/wallpapers";
+
 export function Wallpaper() {
+  const { wallpaperId } = useDesktop();
+  const wallpaper = wallpapers.find((w) => w.id === wallpaperId) ?? wallpapers[0];
+
+  if (wallpaper.src) {
+    return (
+      <div className="fixed inset-0 -z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={wallpaper.src}
+          alt=""
+          className="h-full w-full object-cover"
+          draggable={false}
+        />
+      </div>
+    );
+  }
+
+  // "Aurora" — the original CSS-gradient wallpaper
   return (
     <div
       className="fixed inset-0 -z-10"
@@ -10,8 +33,7 @@ export function Wallpaper() {
       <div
         className="absolute inset-0 opacity-60"
         style={{
-          background:
-            "linear-gradient(to top, #05060f 0%, rgba(5,6,15,0) 45%)",
+          background: "linear-gradient(to top, #05060f 0%, rgba(5,6,15,0) 45%)",
         }}
       />
       <div
