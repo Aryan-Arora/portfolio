@@ -60,7 +60,7 @@ export function NotesApp({ chrome }: { chrome?: WindowChrome }) {
                   {paragraph.slice(3)}
                 </h2>
               ) : (
-                <p key={i}>{paragraph}</p>
+                <p key={i}>{renderInline(paragraph)}</p>
               )
             )}
           </div>
@@ -86,6 +86,27 @@ export function NotesApp({ chrome }: { chrome?: WindowChrome }) {
       </div>
     </WindowFrame>
   );
+}
+
+// renders [label](url) as links, everything else as plain text
+function renderInline(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (!match) return part;
+    const [, label, url] = match;
+    return (
+      <a
+        key={i}
+        href={url}
+        target={url.startsWith("http") ? "_blank" : undefined}
+        rel={url.startsWith("http") ? "noopener noreferrer" : undefined}
+        className="text-[#f5c243] underline decoration-[#f5c243]/40 underline-offset-2 hover:decoration-[#f5c243]"
+      >
+        {label}
+      </a>
+    );
+  });
 }
 
 function NoteListItem({

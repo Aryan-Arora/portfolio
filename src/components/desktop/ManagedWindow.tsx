@@ -63,8 +63,28 @@ export function ManagedWindow({
     dir: ResizeDir | "move";
   } | null>(null);
 
+  // true once the user has dragged/resized/zoomed — untouched windows re-flow
+  // to their natural layout on viewport resize, touched ones only get clamped
+  const touched = useRef(false);
+
   useEffect(() => {
     setRect((r) => r ?? clampRect(initialRect(window.innerWidth, window.innerHeight)));
+
+    const onViewportResize = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setRect((r) => {
+        if (!r) return r;
+        if (!touched.current) return clampRect(initialRect(vw, vh));
+        return clampRect({
+          ...r,
+          w: Math.max(MIN_W, Math.min(r.w, vw - 24)),
+          h: Math.max(MIN_H, Math.min(r.h, vh - MENU_BAR - 24)),
+        });
+      });
+    };
+    window.addEventListener("resize", onViewportResize);
+    return () => window.removeEventListener("resize", onViewportResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -75,6 +95,7 @@ export function ManagedWindow({
     if (!rect) return;
     e.preventDefault();
     onFocus();
+    touched.current = true;
     gesture.current = { startX: e.clientX, startY: e.clientY, startRect: rect, dir };
 
     const onMove = (ev: PointerEvent) => {
@@ -123,6 +144,7 @@ export function ManagedWindow({
 
   const toggleZoom = () => {
     if (!rect) return;
+    touched.current = true;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     if (preZoom.current) {

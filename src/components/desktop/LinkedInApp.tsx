@@ -108,9 +108,12 @@ export function LinkedInApp({ chrome }: { chrome?: WindowChrome }) {
       </div>
 
       <div className="px-5 pb-5">
-        <div className="-mt-10 flex h-20 w-20 items-center justify-center rounded-full border-4 border-[#1c1c1e] bg-gradient-to-br from-[#38506b] to-[#1d2a3a] text-2xl font-bold text-white">
-          AA
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/avatar.jpg"
+          alt="Aryan Arora"
+          className="-mt-10 h-20 w-20 rounded-full border-4 border-[#1c1c1e] object-cover"
+        />
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <h3 className="text-lg font-semibold text-white">Aryan Arora</h3>
           <BadgeCheck className="h-4 w-4 text-[#70b5f9]" />
